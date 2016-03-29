@@ -1,0 +1,115 @@
+<!-- Copyright (c) 2016 NuWave Technologies, Inc. All rights reserved. -->
+<html>
+  <head>
+    <title>Employee CRUD Sample Applicationn</title>
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <style>
+    body {
+      font-family: Roboto;
+      font-size: 11pt;
+    }
+    input, textarea, keygen, select, button, table {
+      font: inherit;
+    }
+    #table th {
+      text-align: left;
+    }
+    #table td:nth-child(1) {
+      width: 6.0em;
+      background-color: #DFDFDF;
+    }
+    #table td:nth-child(2) input, #table td:nth-child(3) input {
+      width: 12.0em;
+    }
+    #table td:nth-child(4) input, #table td:nth-child(5) input {
+      width: 14.0em;
+    }
+    #table td:nth-child(6) input {
+      width: 3.0em;
+    }
+    #table td:nth-child(7) input {
+      width: 6.0em;
+    }
+    #table td {
+      border: 1px solid silver;
+      padding: 3px;
+    }
+    </style>
+  </head>
+  <body>
+    <h2>Employee CRUD Sample Application</h2>
+    <p>
+      This application demonstrates the use of the sample Employee API, a "user-defined" 
+      REST API supporting Create, Read, Update and Delete of 'employee' resources
+    </p>
+
+    <div>
+      <label for="hostPort" style="font-weight:bold">LightWave&trade; Server Host[:port]</label> <input type="text" id="hostPort">
+    </div>
+    
+    <div style="margin:1.0em 0">
+      <button type="button" onClick="getEmployees()">Get Employees</button>
+    </div>
+
+    <form id="create">
+      <table id="table" onsubmit="return false;">
+        <colgroup>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col class="zip">
+        </colgroup>
+        <tr>
+          <th>ID #</th> <th class="givenName">First Name</th> <th>Last Name</th> <th>Street</th> <th>City</th> <th>State</th> <th>ZIP</th>
+        </tr>
+        <tr>
+          <td>
+            <span></span>
+          </td>
+          <td  class="givenName" >
+            <input name="givenName" maxlength="24">
+          </td>
+          <td>
+            <input name="surname" maxlength="24">
+          </td>
+          <td>
+            <input name="street" maxlength="32">
+          </td>
+          <td>
+            <input name="city" maxlength="32">
+          </td>
+          <td>
+            <input name="state" maxlength="2">
+          </td>
+          <td>
+            <input name="zip" maxlength="10">
+          </td>
+          <td>
+            <button onClick="addEmployee();return false">Create</button>
+          </td>
+        </tr>
+        <tbody id="employees"></tbody>
+      </table>
+    </form>
+
+    <div id="message" style="margin:1.0em 0"></div>
+   
+    <div style="margin:1.0em 0">
+      <fieldset>
+        <legend>&nbsp;LightWave Server Request&nbsp;</legend>
+        <pre id="request">None</pre>
+      </fieldset>
+    </div>
+    <div style="margin:1.0em 0">
+      <fieldset>
+        <legend>&nbsp;LightWave Server Response&nbsp;</legend>
+        <pre id="response">None</pre>
+      </fieldset>
+    </div>
+    
+  </body>
+  <script src="./index.js"></script>
+</html>

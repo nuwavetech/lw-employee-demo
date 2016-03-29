@@ -1,0 +1,30 @@
+?tacl routine
+#frame
+
+[#if [ #fileinfo / existence / EMPDATA ] <> 0 |then|
+    #output Purging EMPDATA file ...
+    sink / #purge EMPDATA /
+]
+
+#output Creating Employee Demo DDL dictionary ...
+
+ddl /inline/
+inlprefix +
++ ?dict !
++ ?source EMPDDL
+inleof
+
+#output Creating Employee Demo EMPDATA file ...
+
+fup /inline/
+inlprefix +
++ obey EMPFUP
++ alter EMPDATA, no audit
++ load EMPDATAX, EMPDATA
++ alter EMPDATA, audit
+inleof
+
+#output Completed.
+
+#unframe
+#return

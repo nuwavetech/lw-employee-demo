@@ -1,0 +1,371 @@
+/**********************************************************************
+*
+*  Copyright (c) 2016 NuWave Technologies, Inc. All rights reserved. 
+*
+*  Employee Server is part of a sample application for LightWave Server.
+*  It is a standard server that runs as a standalone process or under
+*  Pathway ('set server param pathway "1"').
+*   
+*  Employee Server supports CRUD operations Create, Read, Update and
+*  Delete. The interprocess messages are defined in 'emp.h', which is 
+*  generated from DDL EMPDDL.
+*
+**********************************************************************/
+
+#if defined __TANDEM
+#pragma nolist
+#define OMIT
+#else
+#define OMIT 0
+#endif
+
+#include <cextdecs>
+#include <tal.h>
+
+#include <stdio.h>
+#include <string.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <time.h>
+#include <stdarg.h>
+#include <errno.h>
+
+#include "emp.h"
+
+#ifdef __TANDEM
+#pragma list
+#endif
+
+#define SET_KEY_APPROX                  0
+#define SET_KEY_GENERIC                 1
+#define SET_KEY_EXACT                   2
+
+
+/* globals */
+
+short DataFileNumber;
+
+typedef union
+  {
+  employee_create_reply_def success;
+  employee_request_error_def failure;
+  } EmployeeCreateReplyType;
+
+typedef union
+  {
+  employee_read_reply_def success;
+  employee_request_error_def failure;
+  } EmployeeReadReplyType;
+
+typedef union
+  {
+  employee_update_reply_def success;
+  employee_request_error_def failure;
+  } EmployeeUpdateReplyType;
+
+typedef union
+  {
+  employee_delete_reply_def success;
+  employee_request_error_def failure;
+  } EmployeeDeleteReplyType;
+
+typedef union
+  {
+  employee_list_reply_def success;
+  employee_request_error_def failure;
+  } EmployeeListReplyType;
+
+
+short HandleSystemMessage( short *message );
+short EmployeeCreate( employee_create_request_def *, EmployeeCreateReplyType * );
+short EmployeeRead( employee_read_request_def *, EmployeeReadReplyType * );
+short EmployeeUpdate( employee_update_request_def *, EmployeeUpdateReplyType * );
+short EmployeeDelete( employee_delete_request_def *, EmployeeDeleteReplyType * );
+short EmployeeList( employee_list_request_def *, EmployeeListReplyType * );
+short ErrorReply( employee_request_error_def *, short code, const char *, ... );
+short GetError( short filenumber );
+
+/**************************************************************************************************
+*
+**************************************************************************************************/
+
+int main( int argc, char** argv )
+
+  {
+
+  char inBuffer[1024];
+  char outBuffer[32000];
+
+  short RC; 
+  _cc_status CC;
+  short RECEIVE;
+  short done = 0;
+  short size;
+
+
+  RC = FILE_OPEN_( DATA_FILENAME, (short)strlen( DATA_FILENAME ), &DataFileNumber );
+  if ( RC != 0 )
+    {
+    printf( "%s: FILE_OPEN_( \"%s\" ) RC=%d\n", argv[0], DATA_FILENAME, RC );
+    return 0;
+    }
+
+  RC = FILE_OPEN_( "$RECEIVE", 8, &RECEIVE, OMIT, OMIT, OMIT, 1 );
+  if ( RC != 0 )
+    {
+    printf( "%s: FILE_OPEN_( \"$RECEIVE\" ) RC=%d\n", argv[0], RC );
+    return 0;
+    }
+
+  while( !done )
+    {
+    CC = READUPDATEX( RECEIVE, inBuffer, (short)sizeof( inBuffer ) );
+    if ( _status_lt( CC ) )  /* file system error */
+      {
+      printf( "READUPATE $RECEIVE I/O ERROR %d\n", GetError( RECEIVE ) );
+      break;
+      }
+
+    if ( _status_gt( CC ) )  /* system message received */
+      {
+      done = HandleSystemMessage( (short *)inBuffer );
+      continue;
+      }
+
+   switch( *(short *)inBuffer )
+     {
+     case REQUEST_CODE_EMPLOYEE_CREATE:
+       size = EmployeeCreate( (employee_create_request_def *) inBuffer, (EmployeeCreateReplyType *) outBuffer );
+       break;
+
+     case REQUEST_CODE_EMPLOYEE_READ:
+       size = EmployeeRead( (employee_read_request_def *) inBuffer, (EmployeeReadReplyType *) outBuffer );
+       break;
+
+     case REQUEST_CODE_EMPLOYEE_UPDATE:
+       size = EmployeeUpdate( (employee_update_request_def *) inBuffer, (EmployeeUpdateReplyType *) outBuffer );
+       break;
+
+     case REQUEST_CODE_EMPLOYEE_DELETE:
+       size = EmployeeDelete( (employee_delete_request_def *) inBuffer, (EmployeeDeleteReplyType *) outBuffer );
+       break;
+
+     case REQUEST_CODE_EMPLOYEE_LIST:
+       size = EmployeeList( (employee_list_request_def *) inBuffer, (EmployeeListReplyType *) outBuffer );
+       break;
+
+     default:
+       size = ErrorReply( (employee_request_error_def *) outBuffer, REPLY_CODE_INVALID_REQUEST, "INVALID REQUEST CODE" );
+       break;
+
+     }  /* end switch */
+
+    REPLYX( outBuffer, size );
+
+    }  /* end while */
+
+
+  FILE_CLOSE_( DataFileNumber );
+  FILE_CLOSE_( RECEIVE );
+
+  return 0;
+
+  }  /* main */
+
+
+
+short HandleSystemMessage( short *message )
+  {
+
+  static int opens = 0;
+
+  switch( *message )
+    {
+    case -103:       /* open */
+      opens++;
+      break;
+
+    case -104:       /* close */
+      opens--;
+      break;
+
+    default:
+      break;
+    }
+
+  REPLYX();
+
+  /*  if running under PATHWAY  */
+  if ( getenv( "PATHWAY" ) )
+    return (short)( opens == 0 );   /* return true to signal shutdown */
+
+  return 0;
+  }  /* HandleSystemMessage */
+
+
+short EmployeeCreate( employee_create_request_def *request, EmployeeCreateReplyType *reply )
+  {
+  short RC; 
+  _cc_status CC;
+  short transid[4];
+  employee_def employee;
+
+  RC = GETTRANSID( transid );
+  if ( RC != 0 )
+    return ErrorReply( &reply->failure, REPLY_CODE_NO_TRANSACTION, "NO TRANSACTION IN PROGRESS" );
+
+  employee.employee_no = (long)time(NULL);
+  memcpy( &employee.employee_data, &request->employee_data, sizeof( employee.employee_data ) );
+
+  CC = WRITEX( DataFileNumber, (char*)&employee, sizeof(employee) );
+  if ( ! _status_eq( CC ) )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "WRITEX FILE I/O ERROR %d", GetError( DataFileNumber ) );
+
+  reply->success.reply_code = REPLY_CODE_SUCCESS;
+  reply->success.employee_no = employee.employee_no;
+
+  return sizeof( reply->success );
+
+  }  /* EmployeeCreate */
+
+short EmployeeRead( employee_read_request_def *request, EmployeeReadReplyType *reply )
+  {
+  short RC; 
+  _cc_status CC;
+  employee_def *employee = &reply->success.employee;
+
+  RC = FILE_SETKEY_( DataFileNumber, (char*)&request->employee_no, sizeof( request->employee_no ), 0, SET_KEY_EXACT );
+  if ( RC != 0 )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "FILE_SETKEY_ ERROR=%d", RC );
+
+  CC = READX( DataFileNumber, (char*)employee, sizeof( *employee ) );
+  if ( ! _status_eq( CC ) )
+    {
+    short FSE = GetError( DataFileNumber );
+    if ( FSE == 11 )
+      return ErrorReply( &reply->failure, REPLY_CODE_INVALID_EMPLOYEE_NO, "INVALID EMPLOYEE NUMBER" );
+    else
+      return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "READUPDATELOCK FILE I/O ERROR %d", FSE );
+    }
+
+  reply->success.reply_code = REPLY_CODE_SUCCESS;
+  return sizeof( reply->success );
+
+  }  /* EmployeeRead */
+
+short EmployeeUpdate( employee_update_request_def *request, EmployeeUpdateReplyType *reply )
+  {
+  short RC; 
+  _cc_status CC;
+  short transid[4];
+  employee_def employee;
+
+  RC = GETTRANSID( transid );
+  if ( RC != 0 )
+    return ErrorReply( &reply->failure, REPLY_CODE_NO_TRANSACTION, "NO TRANSACTION IN PROGRESS" );
+
+  RC = FILE_SETKEY_( DataFileNumber, (char*)&request->employee.employee_no, sizeof( request->employee.employee_no ), 0, SET_KEY_EXACT);
+  if ( RC != 0 )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "FILE_SETKEY_ ERROR=%d", RC );
+
+  CC = READUPDATELOCKX( DataFileNumber, (char*)&employee, sizeof( employee ) );
+  if ( ! _status_eq( CC ) )
+    {
+    short FSE = GetError( DataFileNumber );
+    if ( FSE == 11 )
+      return ErrorReply( &reply->failure, REPLY_CODE_INVALID_EMPLOYEE_NO, "INVALID EMPLOYEE NUMBER" );
+    else
+      return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "READUPDATELOCK FILE I/O ERROR %d", FSE );
+    }
+
+  CC = WRITEUPDATEUNLOCKX( DataFileNumber, (char*)&request->employee, sizeof( request->employee ) );
+  if ( ! _status_eq( CC ) )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "WRITEUPDATEUNLOCK FILE I/O ERROR %d", GetError( DataFileNumber ) );
+
+  reply->success.reply_code = REPLY_CODE_SUCCESS;
+  return sizeof( reply->success );
+
+  }  /* EmployeeUpdate */
+
+short EmployeeDelete( employee_delete_request_def *request, EmployeeDeleteReplyType *reply )
+  {
+  short RC; 
+  _cc_status CC;
+  short transid[4];
+  employee_def employee;
+
+  RC = GETTRANSID( transid );
+  if ( RC != 0 )
+    return ErrorReply( &reply->failure, REPLY_CODE_NO_TRANSACTION, "NO TRANSACTION IN PROGRESS" );
+
+  RC = FILE_SETKEY_( DataFileNumber, (char*)&request->employee_no, sizeof( request->employee_no ), 0, SET_KEY_EXACT);
+  if ( RC != 0 )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "FILE_SETKEY_ ERROR=%d", RC );
+
+  CC = READUPDATELOCKX( DataFileNumber, (char*)&employee, sizeof( employee ) );
+  if ( ! _status_eq( CC ) )
+    {
+    short FSE = GetError( DataFileNumber );
+    if ( FSE == 11 )
+      return ErrorReply( &reply->failure, REPLY_CODE_INVALID_EMPLOYEE_NO, "INVALID EMPLOYEE NUMBER" );
+    else
+      return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "READUPDATELOCK FILE I/O ERROR %d", FSE );
+    }
+
+  CC = WRITEUPDATEUNLOCKX( DataFileNumber, (char *)&employee, 0 );
+  if ( ! _status_eq( CC ) )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "WRITEUPDATEUNLOCK FILE I/O ERROR %d", GetError( DataFileNumber ) );
+
+  reply->success.reply_code = REPLY_CODE_SUCCESS;
+  return sizeof( reply->success );
+
+  }  /* EmployeeDelete */
+
+short EmployeeList( employee_list_request_def *request, EmployeeListReplyType *reply )
+  {
+  short RC; 
+  _cc_status CC;
+  int x;
+
+  RC = FILE_SETKEY_( DataFileNumber, (char*)&request->begin_after, sizeof( request->begin_after ), 0, SET_KEY_APPROX, 0x8000 );
+  if ( RC != 0 )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "FILE_SETKEY_ ERROR=%d", RC );
+
+  reply->success.record_count = 0;
+
+  for ( x = 0; x < MAX_RECORDS; x++ )
+    {
+    CC = READX( DataFileNumber, (char*)&reply->success.employee[x], sizeof( reply->success.employee[x] ) );
+    if ( _status_gt( CC ) )  /* EOF */
+      break;
+    if ( ! _status_eq( CC ) )
+      return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "FILE I/O ERROR %d", GetError( DataFileNumber ) );
+
+    reply->success.record_count += 1;
+    }
+  
+  reply->success.reply_code = REPLY_CODE_SUCCESS;
+
+  return offsetof( employee_list_reply_def, employee[0] ) + ( offsetof( employee_list_reply_def, employee[1] ) - offsetof( employee_list_reply_def, employee[0] ) ) * reply->success.record_count;
+
+  }  /* EmployeeList */
+
+
+short ErrorReply( employee_request_error_def *buffer, short code, const char *message, ... )
+  {
+  va_list varargs;
+  va_start( varargs, message );
+  vsprintf( buffer->error_message, message, varargs );
+  va_end( varargs );
+
+  buffer->reply_code = code;
+  return (short) sizeof( *buffer );
+
+  }  /* ErrorReply */
+
+short GetError( short filenumber )
+  {
+  short fse;
+  FILE_GETINFO_( filenumber, &fse );
+  return fse;
+  }
