@@ -1,6 +1,6 @@
 # employee-crud
 
-> This sample requires LightWave Server Beta 3 or later
+> This sample requires LightWave Server Beta 4 or later
 
 Version 1.0.0 - 29MAR206
 
