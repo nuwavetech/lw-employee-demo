@@ -13,7 +13,7 @@ function getEmployees() {
 
   var request = {};
   request.method = 'GET';
-  request.uri = '/employee';
+  request.uri = '/employees';
     
   var employees = sendRequest( request );
   if ( employees !== undefined ) {
@@ -31,7 +31,7 @@ function addEmployee() {
   
   var request = {};
   request.method = "POST";
-  request.uri = '/employee';
+  request.uri = '/employees';
   request.data = {};
   
   request.data = {}
@@ -82,7 +82,7 @@ function deleteEmployee( id ) {
   
   var request = {};
   request.method = "DELETE";
-  request.uri = '/employee/' + id;
+  request.uri = '/employees/' + id;
 
   sendRequest( request );
 
@@ -96,7 +96,7 @@ function updateEmployee( id ) {
   
   var request = {};
   request.method = "PUT";
-  request.uri = '/employee/' + id;
+  request.uri = '/employees/' + id;
   request.data = {};
   
   request.data = {}
@@ -131,7 +131,7 @@ function sendRequest( request ) {
   }
   
   var url = scheme + '://' + server + request.uri;
-  var hasContent = ['POST','PUT','DELETE'].indexOf( request.method ) >= 0 && request.data !== undefined;
+  var hasContent = ['POST','PUT'].indexOf( request.method ) >= 0 && request.data !== undefined;
   
   /*  display the request */
   var r = request.method + ' ' + url + '\r';

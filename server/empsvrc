@@ -44,6 +44,7 @@
 /* globals */
 
 short DataFileNumber;
+short CounterFileNumber;
 
 typedef union
   {
@@ -107,6 +108,13 @@ int main( int argc, char** argv )
   if ( RC != 0 )
     {
     printf( "%s: FILE_OPEN_( \"%s\" ) RC=%d\n", argv[0], DATA_FILENAME, RC );
+    return 0;
+    }
+
+  RC = FILE_OPEN_( COUNTER_FILENAME, (short)strlen( COUNTER_FILENAME ), &CounterFileNumber );
+  if ( RC != 0 )
+    {
+    printf( "%s: FILE_OPEN_( \"%s\" ) RC=%d\n", argv[0], COUNTER_FILENAME, RC );
     return 0;
     }
 
@@ -209,18 +217,40 @@ short EmployeeCreate( employee_create_request_def *request, EmployeeCreateReplyT
   _cc_status CC;
   short transid[4];
   employee_def employee;
-
+  counter_record_def counter;
+  
   RC = GETTRANSID( transid );
   if ( RC != 0 )
     return ErrorReply( &reply->failure, REPLY_CODE_NO_TRANSACTION, "NO TRANSACTION IN PROGRESS" );
 
-  employee.employee_no = (long)time(NULL);
+  
+  /*  read the *last* employee number issued  */
+  
+  counter.counter_key = 0;
+  
+  RC = FILE_SETKEY_( CounterFileNumber, (char*)&counter.counter_key, sizeof( counter.counter_key ), 0, SET_KEY_EXACT );
+  if ( RC != 0 )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "FILE_SETKEY_ ERROR=%d", RC );
+
+  CC = READUPDATELOCKX( CounterFileNumber, (char*)&counter, sizeof( counter ) );
+  if ( ! _status_eq( CC ) )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "COUNTER FILE I/O ERROR %d", GetError( CounterFileNumber ) );
+  
+  counter.counter_value += 1;
+  
+  CC = WRITEUPDATEUNLOCKX( CounterFileNumber, (char*)&counter, sizeof( counter ) );
+  if ( ! _status_eq( CC ) )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "WRITEUPDATEUNLOCK FILE I/O ERROR %d", GetError( CounterFileNumber ) );
+
+  /*  write the employee data */
+  
+  employee.employee_no = counter.counter_value;
   memcpy( &employee.employee_data, &request->employee_data, sizeof( employee.employee_data ) );
 
   CC = WRITEX( DataFileNumber, (char*)&employee, sizeof(employee) );
   if ( ! _status_eq( CC ) )
     return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "WRITEX FILE I/O ERROR %d", GetError( DataFileNumber ) );
-
+  
   reply->success.reply_code = REPLY_CODE_SUCCESS;
   reply->success.employee_no = employee.employee_no;
 
@@ -245,7 +275,7 @@ short EmployeeRead( employee_read_request_def *request, EmployeeReadReplyType *r
     if ( FSE == 11 )
       return ErrorReply( &reply->failure, REPLY_CODE_INVALID_EMPLOYEE_NO, "INVALID EMPLOYEE NUMBER" );
     else
-      return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "READUPDATELOCK FILE I/O ERROR %d", FSE );
+      return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "READX FILE I/O ERROR %d", FSE );
     }
 
   reply->success.reply_code = REPLY_CODE_SUCCESS;
@@ -264,7 +294,7 @@ short EmployeeUpdate( employee_update_request_def *request, EmployeeUpdateReplyT
   if ( RC != 0 )
     return ErrorReply( &reply->failure, REPLY_CODE_NO_TRANSACTION, "NO TRANSACTION IN PROGRESS" );
 
-  RC = FILE_SETKEY_( DataFileNumber, (char*)&request->employee.employee_no, sizeof( request->employee.employee_no ), 0, SET_KEY_EXACT);
+  RC = FILE_SETKEY_( DataFileNumber, (char*)&request->employee.employee_no, sizeof( request->employee.employee_no ), 0, SET_KEY_EXACT );
   if ( RC != 0 )
     return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "FILE_SETKEY_ ERROR=%d", RC );
 
@@ -298,7 +328,7 @@ short EmployeeDelete( employee_delete_request_def *request, EmployeeDeleteReplyT
   if ( RC != 0 )
     return ErrorReply( &reply->failure, REPLY_CODE_NO_TRANSACTION, "NO TRANSACTION IN PROGRESS" );
 
-  RC = FILE_SETKEY_( DataFileNumber, (char*)&request->employee_no, sizeof( request->employee_no ), 0, SET_KEY_EXACT);
+  RC = FILE_SETKEY_( DataFileNumber, (char*)&request->employee_no, sizeof( request->employee_no ), 0, SET_KEY_EXACT );
   if ( RC != 0 )
     return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "FILE_SETKEY_ ERROR=%d", RC );
 
@@ -369,3 +399,4 @@ short GetError( short filenumber )
   FILE_GETINFO_( filenumber, &fse );
   return fse;
   }
+

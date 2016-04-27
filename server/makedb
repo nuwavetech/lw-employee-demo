@@ -1,11 +1,6 @@
 ?tacl routine
 #frame
 
-[#if [ #fileinfo / existence / EMPDATA ] <> 0 |then|
-    #output Purging EMPDATA file ...
-    sink / #purge EMPDATA /
-]
-
 #output Creating Employee Demo DDL dictionary ...
 
 ddl /inline/
@@ -14,16 +9,54 @@ inlprefix +
 + ?source EMPDDL
 inleof
 
-#output Creating Employee Demo EMPDATA file ...
+#output Creating Employee Demo [DATA^FILENAME] file ...
+
+SINK [#LOAD EMPTACL]
+
+[#if [ #fileinfo / existence / [DATA^FILENAME] ] <> 0 |then|
+  #output Purging [DATA^FILENAME] file ...
+  sink [#purge [DATA^FILENAME] ]
+]
+[#if [ #fileinfo / existence / [COUNTER^FILENAME] ] <> 0 |then|
+  #output Purging [COUNTER^FILENAME] file ...
+  sink [#purge [COUNTER^FILENAME] ]
+]
 
 fup /inline/
 inlprefix +
 + obey EMPFUP
-+ alter EMPDATA, no audit
-+ load EMPDATAX, EMPDATA
-+ alter EMPDATA, audit
++ alter [DATA^FILENAME], no audit
++ load EMPDATAX, [DATA^FILENAME]
++ alter [DATA^FILENAME], audit
 inleof
 
+
+==  initialize EMPNO file
+
+#PUSH open_error write_error write_data 
+
+#DEF counter STRUCT LIKE COUNTER^RECORD;
+#SET counter:COUNTER^KEY 0 
+#SET counter:COUNTER^VALUE 99
+
+ == Open the file
+ #SET open_error [#REQUESTER/WAIT/WRITE [COUNTER^FILENAME] write_error write_data]
+ [#IF [open_error] |THEN|
+ #OUTPUT *** Error opening [COUNTER^FILENAME]: [open_error]
+ #RETURN
+ ]
+ 
+ SINK [#BEGINTRANSACTION]
+ #APPENDV write_data counter
+ SINK [#ENDTRANSACTION]
+ 
+ == write will fail if record exists, which is ok!
+ == #outputv write_error  
+ 
+ SINK [#REQUESTER/WAIT/CLOSE write_data]
+
+== end initialize EMPNO
+ 
 #output Completed.
 
 #unframe
