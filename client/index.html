@@ -5,32 +5,45 @@
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <style>
     body {
-      font-family: Roboto;
+      font-family: Roboto, Tahoma;
       font-size: 11pt;
     }
-    input, textarea, keygen, select, button, table {
+    input, textarea, select, button, table {
       font: inherit;
     }
-    #table th {
-      text-align: left;
+    div.table {
+      display:table;
+      border-collapse: collapse;
     }
-    #table td:nth-child(1) {
-      width: 6.0em;
+    div.table .tr {
+      display:table-row;
+    }
+    div.table .tr span {
+      display:table-cell;
+    }
+    div.table div.tr span {
+      font-weight: bold;
+      border: none;
+    }
+    
+    div.table span:nth-child(1) {
+      width: 4.0em;
+      text-align: right;
       background-color: #DFDFDF;
     }
-    #table td:nth-child(2) input, #table td:nth-child(3) input {
+    div.table span:nth-child(2) input, div.table span:nth-child(3) input {
       width: 12.0em;
     }
-    #table td:nth-child(4) input, #table td:nth-child(5) input {
+    div.table span:nth-child(4) input, div.table span:nth-child(5) input {
       width: 14.0em;
     }
-    #table td:nth-child(6) input {
+    div.table span:nth-child(6) input {
       width: 3.0em;
     }
-    #table td:nth-child(7) input {
+    div.table span:nth-child(7) input {
       width: 6.0em;
     }
-    #table td {
+    div.table span {
       border: 1px solid silver;
       padding: 3px;
     }
@@ -43,57 +56,48 @@
       REST API supporting Create, Read, Update and Delete of 'employee' resources
     </p>
 
-    <div>
-      <label for="hostPort" style="font-weight:bold">LightWave&trade; Server Host[:port]</label> <input type="text" id="hostPort">
+    <form onsubmit="return false">
+      <div>
+        <label for="hostPort" style="font-weight:bold">LightWave&trade; Server Host[:port]</label> <input type="text" id="hostPort">
+      </div>
+      
+      <div style="margin:1.0em 0">
+        <input type="submit" value="Get Employees" onClick="getEmployees()">
+      </div>
+    </form>
+
+    <div class="table">
+      <div class="tr"> 
+        <span>ID #</span><span>First Name</span><span>Last Name</span><span>Street</span><span>City</span><span>State</span><span>ZIP</span>
+      </div>
+      <form id="create" class="tr" onsubmit="return false">
+        <span></span>
+        <span>
+          <input name="givenName" maxlength="24">
+        </span>
+        <span>
+          <input name="surname" maxlength="24">
+        </span>
+        <span>
+          <input name="street" maxlength="32">
+        </span>
+        <span>
+          <input name="city" maxlength="32">
+        </span>
+        <span>
+          <input name="state" maxlength="2">
+        </span>
+        <span>
+          <input name="zip" maxlength="10">
+        </span>
+        <span>
+          <input type="submit" onClick="addEmployee()" value="Create">
+        </span>
+      </form>
     </div>
     
-    <div style="margin:1.0em 0">
-      <button type="button" onClick="getEmployees()">Get Employees</button>
-    </div>
-
-    <form id="create">
-      <table id="table" onsubmit="return false;">
-        <colgroup>
-          <col>
-          <col>
-          <col>
-          <col>
-          <col>
-          <col>
-          <col class="zip">
-        </colgroup>
-        <tr>
-          <th>ID #</th> <th class="givenName">First Name</th> <th>Last Name</th> <th>Street</th> <th>City</th> <th>State</th> <th>ZIP</th>
-        </tr>
-        <tr>
-          <td>
-            <span></span>
-          </td>
-          <td  class="givenName" >
-            <input name="givenName" maxlength="24">
-          </td>
-          <td>
-            <input name="surname" maxlength="24">
-          </td>
-          <td>
-            <input name="street" maxlength="32">
-          </td>
-          <td>
-            <input name="city" maxlength="32">
-          </td>
-          <td>
-            <input name="state" maxlength="2">
-          </td>
-          <td>
-            <input name="zip" maxlength="10">
-          </td>
-          <td>
-            <button onClick="addEmployee();return false">Create</button>
-          </td>
-        </tr>
-        <tbody id="employees"></tbody>
-      </table>
-    </form>
+    <div id="employees" class="table"></div>
+    
 
     <div id="message" style="margin:1.0em 0"></div>
    

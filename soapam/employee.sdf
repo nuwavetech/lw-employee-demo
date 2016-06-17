@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns="http://www.nuwave-tech.com/schemas/soapam/sdf/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:soapam-sdf="http://www.nuwave-tech.com/schemas/soapam/sdf/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xsi:schemaLocation="http://www.nuwave-tech.com/schemas/soapam/sdf/ http://schemas.nuwave-tech.com/schemas/soapam/sdf/sdf.xsd">
+  <types>
+    <type name="employee_create_request" size="126"
+ ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOkVNUExPWUVFLUNSRUFURS1SRVFVRVNUAA==" ddlName="EMPLOYEE-CREATE-REQUEST">
+      <element name="request_code" type="short" offset="0" size="2"/>
+      <element name="employee_data" type="employee_data" offset="2" size="124"/>
+    </type>
+    <type name="employee_data" size="124" ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOiNTVUJUWVBFAA==" ddlName="EMPLOYEE-DATA">
+      <element name="given_name" type="string" offset="0" size="24"/>
+      <element name="surname" type="string" offset="24" size="24"/>
+      <element name="address_data" type="employee_data_address_data" offset="48" size="76"/>
+    </type>
+    <type name="employee_data_address_data" size="76" ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOiNTVUJUWVBFAA=="
+ ddlName="ADDRESS-DATA">
+      <element name="street" type="string" offset="0" size="32"/>
+      <element name="city" type="string" offset="32" size="32"/>
+      <element name="state" type="string" offset="64" size="2"/>
+      <element name="zip" type="string" offset="66" size="10"/>
+    </type>
+    <type name="employee_create_reply" size="6" ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOkVNUExPWUVFLUNSRUFURS1SRVBMWQA="
+ ddlName="EMPLOYEE-CREATE-REPLY">
+      <element name="reply_code" type="short" offset="0" size="2"/>
+      <element name="employee_no" type="int" offset="2" size="4"/>
+    </type>
+    <type name="employee_read_request" size="6" ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOkVNUExPWUVFLVJFQUQtUkVRVUVTVAA="
+ ddlName="EMPLOYEE-READ-REQUEST">
+      <element name="request_code" type="short" offset="0" size="2"/>
+      <element name="employee_no" type="int" offset="2" size="4"/>
+    </type>
+    <type name="employee_read_reply" size="130" ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOkVNUExPWUVFLVJFQUQtUkVQTFkA"
+ ddlName="EMPLOYEE-READ-REPLY">
+      <element name="reply_code" type="short" offset="0" size="2"/>
+      <element name="employee" type="employee" offset="2" size="128"/>
+    </type>
+    <type name="employee" size="128" ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOiNTVUJUWVBFAA==" ddlName="EMPLOYEE">
+      <element name="employee_no" type="int" offset="0" size="4"/>
+      <element name="employee_data" type="employee_data" offset="4" size="124"/>
+    </type>
+    <type name="employee_request_error" size="258" ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOkVNUExPWUVFLVJFUVVFU1QtRVJST1IA"
+ ddlName="EMPLOYEE-REQUEST-ERROR">
+      <element name="reply_code" type="short" offset="0" size="2"/>
+      <element name="error_message" type="string" offset="2" size="256"/>
+    </type>
+    <type name="employee_list_request" size="6" ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOkVNUExPWUVFLUxJU1QtUkVRVUVTVAA="
+ ddlName="EMPLOYEE-LIST-REQUEST">
+      <element name="request_code" type="short" offset="0" size="2"/>
+      <element name="begin_after" type="int" offset="2" size="4" value="0"/>
+    </type>
+    <type name="employee_list_reply" size="16388" ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOkVNUExPWUVFLUxJU1QtUkVQTFkA"
+ ddlName="EMPLOYEE-LIST-REPLY">
+      <element name="reply_code" type="short" offset="0" size="2"/>
+      <element name="record_count" type="short" offset="2" size="2"/>
+      <element name="employee" type="employee" minOccurs="0" maxOccurs="128" offset="4" size="128" dependsOn="record_count"/>
+    </type>
+    <type name="employee_delete_request" size="6" ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOkVNUExPWUVFLURFTEVURS1SRVFVRVNUAA=="
+ ddlName="EMPLOYEE-DELETE-REQUEST">
+      <element name="request_code" type="short" offset="0" size="2"/>
+      <element name="employee_no" type="int" offset="2" size="4"/>
+    </type>
+    <type name="employee_delete_reply" size="2" ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOkVNUExPWUVFLURFTEVURS1SRVBMWQA="
+ ddlName="EMPLOYEE-DELETE-REPLY">
+      <element name="reply_code" type="short" offset="0" size="2"/>
+    </type>
+    <type name="employee_update_request" size="130"
+ ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOkVNUExPWUVFLVVQREFURS1SRVFVRVNUAA==" ddlName="EMPLOYEE-UPDATE-REQUEST">
+      <element name="request_code" type="short" offset="0" size="2"/>
+      <element name="employee" type="employee" offset="2" size="128"/>
+    </type>
+    <type name="employee_update_reply" size="2" ddlObject="XG5za2l0MDYuJGRhdGExMy5lbXBkZW1vOkVNUExPWUVFLVVQREFURS1SRVBMWQA="
+ ddlName="EMPLOYEE-UPDATE-REPLY">
+      <element name="reply_code" type="short" offset="0" size="2"/>
+    </type>
+  </types>
+  <servers>
+    <server name="createServer" processName="$NWEMP" serverClass="employee-server" stringPadding="zeros" maxReplySize="256"/>
+    <server name="readServer" processName="$NWEMP" serverClass="employee-server" stringPadding="zeros" maxReplySize="256"/>
+    <server name="updateServer" processName="$NWEMP" serverClass="employee-server" stringPadding="zeros" maxReplySize="256"/>
+    <server name="deleteServer" processName="$NWEMP" serverClass="employee-server" stringPadding="zeros" maxReplySize="256"/>
+    <server name="listServer" processName="$NWEMP" serverClass="employee-server" stringPadding="zeros" maxReplySize="32000"/>
+  </servers>
+  <service name="EmployeeService" encoding="document/literal" namespace="http://soapam.com/service/EmployeeService/">
+    <documentation>Service that supports Create, Read, Update and Delete of Employees</documentation>
+    <methods>
+      <method name="create" server="createServer" soapAction="http://soapam.com/service/EmployeeService/create">
+        <documentation>Create a new Employee</documentation>
+        <headers>
+          <header name="txControlRequest" type="txControlRequestType" namespace="http://soapam.com/types/" direction="in"/>
+          <header name="txControlResponse" type="txControlResponseType" namespace="http://soapam.com/types/" direction="out"/>
+        </headers>
+        <parameters>
+          <parameter name="employeeData" type="employee_data" direction="in"/>
+          <parameter name="employee_no" type="unsignedInt" direction="out"/>
+          <parameter name="error" type="employee_request_error" direction="out"/>
+        </parameters>
+        <transactionControl serverControl="1" txTimeout="300" validReplyCodes="0" clientControl="1"/>
+        <request type="employee_create_request">
+          <initializers>
+            <initializer value="1" element="request_code"/>
+          </initializers>
+          <mappings>
+            <mapping name="employeeData" element="employee_data"/>
+          </mappings>
+        </request>
+        <replies>
+          <reply type="employee_create_reply" replyCode="0">
+            <mappings>
+              <mapping name="employee_no" element="employee_no"/>
+            </mappings>
+          </reply>
+          <reply type="employee_request_error" replyCode="*">
+            <mappings>
+              <mapping name="error" element="."/>
+            </mappings>
+          </reply>
+        </replies>
+      </method>
+      <method name="read" server="readServer" soapAction="http://soapam.com/service/EmployeeService/read">
+        <documentation>Read details of an employee</documentation>
+        <parameters>
+          <parameter name="employee_no" type="unsignedInt" direction="in"/>
+          <parameter name="employee" type="employee" direction="out"/>
+          <parameter name="error" type="employee_request_error" direction="out"/>
+        </parameters>
+        <transactionControl serverControl="0" clientControl="0"/>
+        <request type="employee_read_request">
+          <initializers>
+            <initializer value="2" element="request_code"/>
+          </initializers>
+          <mappings>
+            <mapping name="employee_no" element="employee_no"/>
+          </mappings>
+        </request>
+        <replies>
+          <reply type="employee_read_reply" replyCode="0">
+            <mappings>
+              <mapping name="employee" element="employee"/>
+            </mappings>
+          </reply>
+          <reply type="employee_request_error" replyCode="*">
+            <mappings>
+              <mapping name="error" element="."/>
+            </mappings>
+          </reply>
+        </replies>
+      </method>
+      <method name="update" server="updateServer" soapAction="http://soapam.com/service/EmployeeService/update">
+        <documentation>Update details of an employee</documentation>
+        <headers>
+          <header name="txControlRequest" type="txControlRequestType" namespace="http://soapam.com/types/" direction="in"/>
+          <header name="txControlResponse" type="txControlResponseType" namespace="http://soapam.com/types/" direction="out"/>
+        </headers>
+        <parameters>
+          <parameter name="employee" type="employee" direction="in"/>
+          <parameter name="error" type="employee_request_error" direction="out"/>
+        </parameters>
+        <transactionControl serverControl="1" txTimeout="300" validReplyCodes="0" clientControl="1"/>
+        <request type="employee_update_request">
+          <initializers>
+            <initializer value="3" element="request_code"/>
+          </initializers>
+          <mappings>
+            <mapping name="employee" element="employee"/>
+          </mappings>
+        </request>
+        <replies>
+          <reply type="employee_update_reply" replyCode="0">
+          </reply>
+          <reply type="employee_request_error" replyCode="*">
+            <mappings>
+              <mapping name="error" element="."/>
+            </mappings>
+          </reply>
+        </replies>
+      </method>
+      <method name="delete" server="deleteServer" soapAction="http://soapam.com/service/EmployeeService/delete">
+        <documentation>Delete an employee</documentation>
+        <headers>
+          <header name="txControlRequest" type="txControlRequestType" namespace="http://soapam.com/types/" direction="in"/>
+          <header name="txControlResponse" type="txControlResponseType" namespace="http://soapam.com/types/" direction="out"/>
+        </headers>
+        <parameters>
+          <parameter name="employee_no" type="int" direction="in"/>
+          <parameter name="error" type="employee_request_error" direction="out"/>
+        </parameters>
+        <transactionControl serverControl="1" txTimeout="300" validReplyCodes="0" clientControl="1"/>
+        <request type="employee_delete_request">
+          <initializers>
+            <initializer value="4" element="request_code"/>
+          </initializers>
+          <mappings>
+            <mapping name="employee_no" element="employee_no"/>
+          </mappings>
+        </request>
+        <replies>
+          <reply type="employee_delete_reply" replyCode="0"/>
+          <reply type="employee_request_error" replyCode="*">
+            <mappings>
+              <mapping name="error" element="."/>
+            </mappings>
+          </reply>
+        </replies>
+      </method>
+      <method name="list" server="listServer" soapAction="http://soapam.com/service/EmployeeService/list">
+        <documentation>List all employees</documentation>
+        <parameters>
+          <parameter name="begin_after" type="int" direction="in"/>
+          <parameter name="employee" type="employee" minOccurs="0" maxOccurs="128" direction="out"/>
+          <parameter name="error" type="employee_request_error" direction="out"/>
+        </parameters>
+        <transactionControl serverControl="0" clientControl="0"/>
+        <request type="employee_list_request">
+          <initializers>
+            <initializer value="5" element="request_code"/>
+          </initializers>
+          <mappings>
+            <mapping name="begin_after" element="begin_after"/>
+          </mappings>
+        </request>
+        <replies>
+          <reply type="employee_list_reply" replyCode="0">
+            <mappings>
+              <mapping name="employee" element="employee"/>
+            </mappings>
+          </reply>
+          <reply type="employee_request_error" replyCode="*">
+            <mappings>
+              <mapping name="error" element="."/>
+            </mappings>
+          </reply>
+        </replies>
+      </method>
+    </methods>
+  </service>
+</definitions>

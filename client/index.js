@@ -61,20 +61,25 @@ function addEmployee() {
 }  // function
 
 function appendrow( id, employee ) {
-  
-  var tr = document.createElement("tr");
-  tr.setAttribute( "id", makeid( "row", id ) );
-  document.getElementById("employees").appendChild( tr );
 
-  tr.innerHTML = '<td><span>' + id + '</span></td>' +
-    '<td><input id="' + makeid('givenName',id) + '" value="' + employee.givenName + '" maxlength="24"></td>' +
-    '<td><input id="' + makeid('surname',id) + '" value="' + employee.surname + '" maxlength="24"></td>' +
-    '<td><input id="' + makeid('street',id) + '" value="' + employee.addressData.street + '" maxlength="32"></td>' +
-    '<td><input id="' + makeid('city',id) + '" value="' + employee.addressData.city + '" maxlength="32"></td>' +
-    '<td><input id="' + makeid('state',id) + '" value="' + employee.addressData.state + '" maxlength="2"></td>' +
-    '<td><input id="' + makeid('zip',id) + '" value="' + employee.addressData.zip + '" maxlength="10"></td>' +
-    '<td><button onClick="updateEmployee('+ id +');return false;">Update</button></td>' +
-    '<td><button onClick="deleteEmployee('+ id +');return false;">Delete</button></td>';
+  //  each row is a form so that there can be a separate 'submit' (update) button for each entry
+  
+  var form = document.createElement("form");
+  form.setAttribute( "id", makeid( "row", id ) );
+  form.setAttribute( "class", "tr" );
+  form.setAttribute( "onsubmit", "return false" );
+
+  document.getElementById("employees").appendChild( form );
+
+  form.innerHTML = '<span>' + id + '</span>' +
+    '<span><input id="' + makeid('givenName',id) + '" value="' + employee.givenName + '" maxlength="24"></span>' +
+    '<span><input id="' + makeid('surname',id) + '" value="' + employee.surname + '" maxlength="24"></span>' +
+    '<span><input id="' + makeid('street',id) + '" value="' + employee.addressData.street + '" maxlength="32"></span>' +
+    '<span><input id="' + makeid('city',id) + '" value="' + employee.addressData.city + '" maxlength="32"></span>' +
+    '<span><input id="' + makeid('state',id) + '" value="' + employee.addressData.state + '" maxlength="2"></span>' +
+    '<span><input id="' + makeid('zip',id) + '" value="' + employee.addressData.zip + '" maxlength="10"></span>' +
+    '<span><input type="submit" value="Update" onClick="updateEmployee('+ id +')"></span>' +
+    '<span><input type="button" value="Delete" onClick="deleteEmployee('+ id +')"></span>';
  
 }  // function
 
@@ -173,7 +178,7 @@ function sendRequest( request ) {
       /* Attempt to convert the response to a Javascript object. */
       var response = JSON.parse( http.response );
       /* Add the response JSON to the response display area. */
-      document.getElementById('response').innerHTML += JSON.stringify( response, null, 2);
+      document.getElementById('response').innerHTML += JSON.stringify( response, null, 2 );
       return response;
     } catch (e) {
       setMessage(true, 'An unknown error occurred.\r' + e.toString() );

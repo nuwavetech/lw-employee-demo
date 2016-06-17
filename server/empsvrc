@@ -272,7 +272,7 @@ short EmployeeRead( employee_read_request_def *request, EmployeeReadReplyType *r
   if ( ! _status_eq( CC ) )
     {
     short FSE = GetError( DataFileNumber );
-    if ( FSE == 11 )
+    if ( FSE == 1 )
       return ErrorReply( &reply->failure, REPLY_CODE_INVALID_EMPLOYEE_NO, "INVALID EMPLOYEE NUMBER" );
     else
       return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "READX FILE I/O ERROR %d", FSE );
