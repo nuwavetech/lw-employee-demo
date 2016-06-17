@@ -1,8 +1,8 @@
 # employee-crud
 
-> This sample requires LightWave Server Beta 3 or later
+> This sample requires LightWave Server Beta 4 or later
 
-Version 1.0.0 - 29MAR206
+Version 1.1.0 - 17JUN2016
 
 This is the Employee CRUD sample application for LightWave Server. It demonstrates a RESTful service with an API supporting Create, Read, Update and Delete operations on 'employee' resources.
 
