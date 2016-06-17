@@ -9,9 +9,9 @@ inlprefix +
 + ?source EMPDDL
 inleof
 
-#output Creating Employee Demo [DATA^FILENAME] file ...
-
 SINK [#LOAD EMPTACL]
+
+#output Creating Employee Demo [DATA^FILENAME] file ...
 
 [#if [ #fileinfo / existence / [DATA^FILENAME] ] <> 0 |then|
   #output Purging [DATA^FILENAME] file ...
