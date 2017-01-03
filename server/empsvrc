@@ -76,15 +76,18 @@ typedef union
   employee_request_error_def failure;
   } EmployeeListReplyType;
 
-
+    
 short HandleSystemMessage( short *message );
 short EmployeeCreate( employee_create_request_def *, EmployeeCreateReplyType * );
 short EmployeeRead( employee_read_request_def *, EmployeeReadReplyType * );
 short EmployeeUpdate( employee_update_request_def *, EmployeeUpdateReplyType * );
 short EmployeeDelete( employee_delete_request_def *, EmployeeDeleteReplyType * );
 short EmployeeList( employee_list_request_def *, EmployeeListReplyType * );
+short EmployeeGetNextNumber( EmployeeCreateReplyType *reply );
+short EmployeeGetNextNumberFromFile( EmployeeCreateReplyType *reply );
 short ErrorReply( employee_request_error_def *, short code, const char *, ... );
 short GetError( short filenumber );
+
 
 /**************************************************************************************************
 *
@@ -140,6 +143,7 @@ int main( int argc, char** argv )
       continue;
       }
 
+      
    switch( *(short *)inBuffer )
      {
      case REQUEST_CODE_EMPLOYEE_CREATE:
@@ -215,36 +219,21 @@ short EmployeeCreate( employee_create_request_def *request, EmployeeCreateReplyT
   {
   short RC; 
   _cc_status CC;
+  short size;
   short transid[4];
   employee_def employee;
-  counter_record_def counter;
   
   RC = GETTRANSID( transid );
   if ( RC != 0 )
     return ErrorReply( &reply->failure, REPLY_CODE_NO_TRANSACTION, "NO TRANSACTION IN PROGRESS" );
 
-  
-  /*  read the *last* employee number issued  */
-  
-  counter.counter_key = 0;
-  
-  RC = FILE_SETKEY_( CounterFileNumber, (char*)&counter.counter_key, sizeof( counter.counter_key ), 0, SET_KEY_EXACT );
-  if ( RC != 0 )
-    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "FILE_SETKEY_ ERROR=%d", RC );
-
-  CC = READUPDATELOCKX( CounterFileNumber, (char*)&counter, sizeof( counter ) );
-  if ( ! _status_eq( CC ) )
-    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "COUNTER FILE I/O ERROR %d", GetError( CounterFileNumber ) );
-  
-  counter.counter_value += 1;
-  
-  CC = WRITEUPDATEUNLOCKX( CounterFileNumber, (char*)&counter, sizeof( counter ) );
-  if ( ! _status_eq( CC ) )
-    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "WRITEUPDATEUNLOCK FILE I/O ERROR %d", GetError( CounterFileNumber ) );
+  size = EmployeeGetNextNumber( reply );
+  if ( reply->success.reply_code != REPLY_CODE_SUCCESS )
+    return size;
 
   /*  write the employee data */
   
-  employee.employee_no = counter.counter_value;
+  employee.employee_no = reply->success.employee_no;
   memcpy( &employee.employee_data, &request->employee_data, sizeof( employee.employee_data ) );
 
   CC = WRITEX( DataFileNumber, (char*)&employee, sizeof(employee) );
@@ -351,6 +340,7 @@ short EmployeeDelete( employee_delete_request_def *request, EmployeeDeleteReplyT
 
   }  /* EmployeeDelete */
 
+  
 short EmployeeList( employee_list_request_def *request, EmployeeListReplyType *reply )
   {
   short RC; 
@@ -400,3 +390,64 @@ short GetError( short filenumber )
   return fse;
   }
 
+short EmployeeGetNextNumber( EmployeeCreateReplyType *reply ) 
+  {
+  short RC;
+  _cc_status CC;
+  short size;
+  short messagetag;
+  long txtag;
+  
+  /*  update the counter file in a separate transaction 
+      so the record is not locked for other requests  */
+      
+  CC = LASTRECEIVE( OMIT, &messagetag );
+  if ( ! _status_eq( CC ) )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "LASTRECEIVE ERROR" );
+  
+  RC = BEGINTRANSACTION( &txtag );
+  if ( RC != 0 )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "BEGINTRANSACTION ERROR=%d", RC );
+
+  size = EmployeeGetNextNumberFromFile( reply );
+  
+  RC = ENDTRANSACTION();
+  if ( RC != 0 )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "ENDTRANSACTION ERROR=%d", RC );
+    
+  CC = ACTIVATERECEIVETRANSID( messagetag );   /*  resume requestor's transaction  */
+  if ( ! _status_eq( CC ) )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "ACTIVATERECEIVETRANSID ERROR" );
+
+  return size;
+  }
+  
+short EmployeeGetNextNumberFromFile( EmployeeCreateReplyType *reply ) 
+  {
+  short RC;
+  _cc_status CC;
+  counter_record_def counter;
+  
+  /*  read the *last* employee number issued  */
+  
+  counter.counter_key = 0;
+  
+  RC = FILE_SETKEY_( CounterFileNumber, (char*)&counter.counter_key, sizeof( counter.counter_key ), 0, SET_KEY_EXACT );
+  if ( RC != 0 )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "FILE_SETKEY_ ERROR=%d", RC );
+
+  CC = READUPDATELOCKX( CounterFileNumber, (char*)&counter, sizeof( counter ) );
+  if ( ! _status_eq( CC ) )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "COUNTER FILE I/O ERROR %d", GetError( CounterFileNumber ) );
+  
+  counter.counter_value += 1;
+  
+  CC = WRITEUPDATEUNLOCKX( CounterFileNumber, (char*)&counter, sizeof( counter ) );
+  if ( ! _status_eq( CC ) )
+    return ErrorReply( &reply->failure, REPLY_CODE_FILEIO_ERROR, "WRITEUPDATEUNLOCK FILE I/O ERROR %d", GetError( CounterFileNumber ) );
+  
+  reply->success.reply_code = REPLY_CODE_SUCCESS;
+  reply->success.employee_no = counter.counter_value;
+
+  return (short)sizeof( reply->success );
+  }

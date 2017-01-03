@@ -1,7 +1,7 @@
 <!-- Copyright (c) 2016 NuWave Technologies, Inc. All rights reserved. -->
 <html>
   <head>
-    <title>Employee CRUD Sample Applicationn</title>
+    <title>Employee CRUD Sample Application</title>
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <style>
     body {
@@ -47,6 +47,9 @@
       border: 1px solid silver;
       padding: 3px;
     }
+    #hostPort {
+      width: 20.0em;
+    }
     </style>
   </head>
   <body>
@@ -58,7 +61,8 @@
 
     <form onsubmit="return false">
       <div>
-        <label for="hostPort" style="font-weight:bold">LightWave&trade; Server Host[:port]</label> <input type="text" id="hostPort">
+        <label for="hostPort" style="font-weight:bold">LightWave&trade; Server Host[:port]</label>
+        <input type="text" id="hostPort" value="lightwave-server.nuwavetech.io">
       </div>
       
       <div style="margin:1.0em 0">
