@@ -1,0 +1,25 @@
+{
+  "intents": [
+    {
+      "intent": "GetEmployeeIntent",
+      "slots": [
+        {
+          "name": "EmployeeNumber",
+          "type": "AMAZON.NUMBER"
+        }
+      ]
+    },
+    {
+      "intent": "SlotFollowUpIntent",
+      "slots": [
+        {
+          "name": "EmployeeNumber",
+          "type": "AMAZON.NUMBER"
+        }
+      ]
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    }
+  ]
+}
