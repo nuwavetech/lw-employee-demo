@@ -47,7 +47,7 @@ function addEmployee() {
   employeeData.addressData.zip = document.getElementsByName("zip")[0].value;
   
   var response = sendRequest( request );
-  if ( response !== undefined ) {
+  if ( typeof response !== "undefined" ) {
     //  append the employee to the table  
     appendrow( response.employeeNo, employeeData );
     // clear the create form
