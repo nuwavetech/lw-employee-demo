@@ -1,10 +1,10 @@
-##Employee Service for LightWave
+## Employee Service for LightWave
 
 The EmployeeService-x.x.json file contains the Employee Service sample for LightWave. It defines a REST API through which a client application can Create, Read, Update and Delete employees.
 
 The service must be deployed using the LightWave Server Console. Sign into the console, then perform these steps:
 
-###Deploy the Service
+### Deploy the Service
 1. Choose Services from the menu. The Services list view appears.
 2. Click the 'import' icon to Import a Service. The Import a Service dialog appears.
 3. Click the 'upload' button to open the file browser. Locate the EmployeeService-x.x.json file and 'open' it.
