@@ -1,12 +1,12 @@
 # employee-crud
 
-> This sample requires LightWave Server Beta 4 or later
-
 Version 1.1.0 - 17JUN2016
 
 This is the Employee CRUD sample application for LightWave Server. It demonstrates a RESTful service with an API supporting Create, Read, Update and Delete operations on 'employee' resources.
 
 The application is comprised of three components: client, service and server. The client is a simple single-page HTML application which uses the XmlHttpRequest built-in browser object to communicate with LightWave Server.
+
+Click to [run the client application](http://nuwavetech.github.io/lws-employee-crud/client/index.html)
 
 The service itself consists of an API and an Access Control Policy (ACP). The API defines which operations (paths and methods) are supported by the service. The ACP determines which users will be allowed to access the API.
 
