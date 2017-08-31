@@ -1,0 +1,123 @@
+<!-- Copyright (c) 2016 NuWave Technologies, Inc. All rights reserved. -->
+<html>
+  <head>
+    <title>Employee CRUD Sample Application</title>
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <style>
+    body {
+      font-family: Roboto, Tahoma;
+      font-size: 11pt;
+    }
+    input, textarea, select, button, table {
+      font: inherit;
+    }
+    div.table {
+      display:table;
+      border-collapse: collapse;
+    }
+    div.table .tr {
+      display:table-row;
+    }
+    div.table .tr span {
+      display:table-cell;
+    }
+    div.table div.tr span {
+      font-weight: bold;
+      border: none;
+    }
+    
+    div.table span:nth-child(1) {
+      width: 4.0em;
+      text-align: right;
+      background-color: #DFDFDF;
+    }
+    div.table span:nth-child(2) input, div.table span:nth-child(3) input {
+      width: 12.0em;
+    }
+    div.table span:nth-child(4) input, div.table span:nth-child(5) input {
+      width: 14.0em;
+    }
+    div.table span:nth-child(6) input {
+      width: 3.0em;
+    }
+    div.table span:nth-child(7) input {
+      width: 6.0em;
+    }
+    div.table span {
+      border: 1px solid silver;
+      padding: 3px;
+    }
+    #hostPort {
+      width: 20.0em;
+    }
+    </style>
+  </head>
+  <body>
+    <h2>Employee CRUD Sample Application</h2>
+    <p>
+      This application demonstrates the use of the sample Employee API, a "user-defined" 
+      REST API supporting Create, Read, Update and Delete of 'employee' resources
+    </p>
+
+    <form onsubmit="return false">
+      <div>
+        <label for="hostPort" style="font-weight:bold">LightWave&trade; Server Host[:port]</label>
+        <input type="text" id="hostPort" value="lightwave-server.nuwavetech.io">
+      </div>
+      
+      <div style="margin:1.0em 0">
+        <input type="submit" value="Get Employees" onClick="getEmployees()">
+      </div>
+    </form>
+
+    <div class="table">
+      <div class="tr"> 
+        <span>ID #</span><span>First Name</span><span>Last Name</span><span>Street</span><span>City</span><span>State</span><span>ZIP</span>
+      </div>
+      <form id="create" class="tr" onsubmit="return false">
+        <span></span>
+        <span>
+          <input name="givenName" maxlength="24">
+        </span>
+        <span>
+          <input name="surname" maxlength="24">
+        </span>
+        <span>
+          <input name="street" maxlength="32">
+        </span>
+        <span>
+          <input name="city" maxlength="32">
+        </span>
+        <span>
+          <input name="state" maxlength="2">
+        </span>
+        <span>
+          <input name="zip" maxlength="10">
+        </span>
+        <span>
+          <input type="submit" onClick="addEmployee()" value="Create">
+        </span>
+      </form>
+    </div>
+    
+    <div id="employees" class="table"></div>
+    
+
+    <div id="message" style="margin:1.0em 0"></div>
+   
+    <div style="margin:1.0em 0">
+      <fieldset>
+        <legend>&nbsp;LightWave Server Request&nbsp;</legend>
+        <pre id="request">None</pre>
+      </fieldset>
+    </div>
+    <div style="margin:1.0em 0">
+      <fieldset>
+        <legend>&nbsp;LightWave Server Response&nbsp;</legend>
+        <pre id="response">None</pre>
+      </fieldset>
+    </div>
+    
+  </body>
+  <script src="./index.js"></script>
+</html>
