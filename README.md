@@ -14,5 +14,5 @@ The server component is a standard Pathway server for HP NonStop Servers. It sup
 
 The setup steps for each component are contained in its corresponding subfolder.
 
-Documentation for LightWave Server can be found at the [NuWave Technologies Documentation Center](docs.nuwavetech.com)
+Documentation for LightWave Server can be found at the [NuWave Technologies Documentation Center](http://docs.nuwavetech.com)
 
