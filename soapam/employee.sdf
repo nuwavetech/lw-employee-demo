@@ -75,11 +75,11 @@
     </type>
   </types>
   <servers>
-    <server name="createServer" processName="$NWEMP" serverClass="employee-server" stringPadding="zeros" maxReplySize="256"/>
-    <server name="readServer" processName="$NWEMP" serverClass="employee-server" stringPadding="zeros" maxReplySize="256"/>
-    <server name="updateServer" processName="$NWEMP" serverClass="employee-server" stringPadding="zeros" maxReplySize="256"/>
-    <server name="deleteServer" processName="$NWEMP" serverClass="employee-server" stringPadding="zeros" maxReplySize="256"/>
-    <server name="listServer" processName="$NWEMP" serverClass="employee-server" stringPadding="zeros" maxReplySize="32000"/>
+    <server name="createServer" processName="=EMPLOYEE-PATHMON" serverClass="employee-server" stringPadding="zeros" maxReplySize="256"/>
+    <server name="readServer" processName="=EMPLOYEE-PATHMON" serverClass="employee-server" stringPadding="zeros" maxReplySize="256"/>
+    <server name="updateServer" processName="=EMPLOYEE-PATHMON" serverClass="employee-server" stringPadding="zeros" maxReplySize="256"/>
+    <server name="deleteServer" processName="=EMPLOYEE-PATHMON" serverClass="employee-server" stringPadding="zeros" maxReplySize="256"/>
+    <server name="listServer" processName="=EMPLOYEE-PATHMON" serverClass="employee-server" stringPadding="zeros" maxReplySize="32000"/>
   </servers>
   <service name="EmployeeService" encoding="document/literal" namespace="http://soapam.com/service/EmployeeService/">
     <documentation>Service that supports Create, Read, Update and Delete of Employees</documentation>

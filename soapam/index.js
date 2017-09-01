@@ -169,16 +169,6 @@ function sendRequest( request ) {
   document.getElementById('request').innerHTML = '';
 
   var server = '';
-  var hostPort = document.getElementById("hostPort");
-  if ( hostPort ) {
-    server = hostPort.value;
-    if ( server === '' ) {
-      setMessage( true, 'You must specify a Server name' );
-      return;
-    } else {
-      setMessage( false, '' );
-    }
-  }
 
   var url = request.uri;
   var hasContent = ['POST','PUT'].indexOf( request.method ) >= 0 && request.data !== undefined;
@@ -332,7 +322,7 @@ function xmlToJson(xml) {
 }
 
 function textValue( textNodeOrString ) {
-  return typeof textNodeOrString == 'object' ? textNodeOrString['#text'] : textNodeOrString;
+  return typeof textNodeOrString == 'object' ? textNodeOrString['#text'] || '' : textNodeOrString;
 }
 
 function formatXML( unformatted ) {
