@@ -1,6 +1,6 @@
 # employee-crud
 
-Version 1.1.0 - 17JUN2016
+Version 1.1.1 - 30AUG2018
 
 This is the Employee CRUD sample application for LightWave Server. It demonstrates a RESTful service with an API supporting Create, Read, Update and Delete operations on 'employee' resources.
 
