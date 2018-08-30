@@ -1,0 +1,545 @@
+{
+  "description": "Employee List Maintenance",
+  "timestamp": 1459192200,
+  "operations": [
+    {
+      "methods": [
+        {
+          "cacheControl": {
+            "enabled": false,
+            "maxAge": 60
+          },
+          "verb": "GET",
+          "api": {
+            "stringPadding": "zeros",
+            "transactionTimeout": 0,
+            "type": "serverclass",
+            "serverclass": {
+              "value": "EMPLOYEE-SERVER",
+              "type": "constant"
+            },
+            "processName": {
+              "value": "=EMPLOYEE-PATHMON",
+              "type": "constant"
+            }
+          },
+          "responses": [
+            {
+              "mappings": [
+                {
+                  "target": {
+                    "value": "*",
+                    "type": "body"
+                  },
+                  "source": "employee"
+                }
+              ],
+              "replyCode": "0",
+              "httpStatus": 200,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeListReply"
+              }
+            },
+            {
+              "mappings": [
+                {
+                  "target": {
+                    "value": "*",
+                    "type": "body"
+                  },
+                  "source": "*"
+                }
+              ],
+              "replyCode": "1:100",
+              "httpStatus": 440,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              }
+            },
+            {
+              "replyCode": "*",
+              "mappings": [
+                {
+                  "source": "*",
+                  "target": {
+                    "type": "body",
+                    "value": "*"
+                  }
+                }
+              ],
+              "httpStatus": 540,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              }
+            }
+          ],
+          "request": {
+            "mappings": [
+              {
+                "source": {
+                  "type": "constant",
+                  "value": "5"
+                },
+                "target": "requestCode"
+              },
+              {
+                "source": {
+                  "type": "query",
+                  "value": "begin-after",
+                  "required": false
+                },
+                "target": "beginAfter"
+              }
+            ],
+            "messageType": {
+              "dictionary": "07f31e3e528de51d778001010000012ef1",
+              "definition": "EmployeeListRequest"
+            }
+          },
+          "description": "Get a list of employees"
+        },
+        {
+          "cacheControl": {
+            "enabled": false,
+            "maxAge": 60
+          },
+          "verb": "POST",
+          "api": {
+            "serverclass": {
+              "value": "EMPLOYEE-SERVER",
+              "type": "constant"
+            },
+            "transactionControl": true,
+            "processName": {
+              "value": "=EMPLOYEE-PATHMON",
+              "type": "constant"
+            },
+            "stringPadding": "zeros",
+            "transactionTimeout": 10,
+            "type": "serverclass"
+          },
+          "responses": [
+            {
+              "transactionControl": "commit",
+              "mappings": [
+                {
+                  "target": {
+                    "value": "*",
+                    "type": "body"
+                  },
+                  "source": "*"
+                }
+              ],
+              "replyCode": "0",
+              "cloakingPaths": [
+                "replyCode"
+              ],
+              "httpStatus": 201,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeCreateReply"
+              }
+            },
+            {
+              "mappings": [
+                {
+                  "target": {
+                    "value": "*",
+                    "type": "body"
+                  },
+                  "source": "*"
+                }
+              ],
+              "transactionControl": "abort",
+              "replyCode": "1:100",
+              "httpStatus": 440,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              }
+            },
+            {
+              "transactionControl": "abort",
+              "replyCode": "*",
+              "mappings": [
+                {
+                  "source": "*",
+                  "target": {
+                    "type": "body",
+                    "value": "*"
+                  }
+                }
+              ],
+              "httpStatus": 540,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              }
+            }
+          ],
+          "request": {
+            "mappings": [
+              {
+                "source": {
+                  "value": "1",
+                  "type": "constant"
+                },
+                "target": "requestCode"
+              },
+              {
+                "source": {
+                  "type": "body",
+                  "value": "*",
+                  "required": true
+                },
+                "target": "employeeData"
+              }
+            ],
+            "messageType": {
+              "dictionary": "07f31e3e528de51d778001010000012ef1",
+              "definition": "EmployeeCreateRequest"
+            }
+          },
+          "description": "Add a new employee"
+        }
+      ],
+      "path": "/employees"
+    },
+    {
+      "methods": [
+        {
+          "cacheControl": {
+            "maxAge": 60,
+            "enabled": false
+          },
+          "verb": "GET",
+          "api": {
+            "stringPadding": "zeros",
+            "transactionTimeout": 0,
+            "type": "serverclass",
+            "serverclass": {
+              "value": "EMPLOYEE-SERVER",
+              "type": "constant"
+            },
+            "processName": {
+              "value": "=EMPLOYEE-PATHMON",
+              "type": "constant"
+            }
+          },
+          "responses": [
+            {
+              "mappings": [
+                {
+                  "target": {
+                    "value": "*",
+                    "type": "body"
+                  },
+                  "source": "employee.employeeData"
+                }
+              ],
+              "replyCode": "0",
+              "httpStatus": 200,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeReadReply"
+              }
+            },
+            {
+              "httpStatus": 404,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              },
+              "replyCode": "1",
+              "mappings": []
+            },
+            {
+              "mappings": [
+                {
+                  "source": "*",
+                  "target": {
+                    "type": "body",
+                    "value": "*"
+                  }
+                }
+              ],
+              "replyCode": "2:100",
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              },
+              "httpStatus": 440
+            },
+            {
+              "mappings": [
+                {
+                  "target": {
+                    "value": "*",
+                    "type": "body"
+                  },
+                  "source": "*"
+                }
+              ],
+              "replyCode": "*",
+              "httpStatus": 540,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              }
+            }
+          ],
+          "request": {
+            "messageType": {
+              "dictionary": "07f31e3e528de51d778001010000012ef1",
+              "definition": "EmployeeReadRequest"
+            },
+            "cloakingPaths": [
+              "*"
+            ],
+            "mappings": [
+              {
+                "source": {
+                  "value": "2",
+                  "type": "constant"
+                },
+                "target": "requestCode"
+              },
+              {
+                "source": {
+                  "value": "{employee-id}",
+                  "type": "path"
+                },
+                "target": "employeeNo"
+              }
+            ]
+          },
+          "description": "Get an employee"
+        },
+        {
+          "cacheControl": {
+            "enabled": false,
+            "maxAge": 60
+          },
+          "verb": "DELETE",
+          "api": {
+            "serverclass": {
+              "value": "EMPLOYEE-SERVER",
+              "type": "constant"
+            },
+            "transactionControl": true,
+            "processName": {
+              "value": "=EMPLOYEE-PATHMON",
+              "type": "constant"
+            },
+            "stringPadding": "zeros",
+            "transactionTimeout": 10,
+            "type": "serverclass"
+          },
+          "responses": [
+            {
+              "mappings": [],
+              "transactionControl": "commit",
+              "replyCode": "0",
+              "httpStatus": 200,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeDeleteReply"
+              }
+            },
+            {
+              "httpStatus": 404,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              },
+              "replyCode": "1",
+              "transactionControl": "abort",
+              "mappings": []
+            },
+            {
+              "mappings": [
+                {
+                  "source": "*",
+                  "target": {
+                    "type": "body",
+                    "value": "*"
+                  }
+                }
+              ],
+              "replyCode": "2:100",
+              "transactionControl": "abort",
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              },
+              "httpStatus": 440
+            },
+            {
+              "mappings": [
+                {
+                  "target": {
+                    "value": "*",
+                    "type": "body"
+                  },
+                  "source": "*"
+                }
+              ],
+              "transactionControl": "abort",
+              "replyCode": "*",
+              "httpStatus": 540,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              }
+            }
+          ],
+          "request": {
+            "messageType": {
+              "dictionary": "07f31e3e528de51d778001010000012ef1",
+              "definition": "EmployeeDeleteRequest"
+            },
+            "cloakingPaths": [
+              "*"
+            ],
+            "mappings": [
+              {
+                "source": {
+                  "value": "4",
+                  "type": "constant"
+                },
+                "target": "requestCode"
+              },
+              {
+                "source": {
+                  "value": "{employee-id}",
+                  "type": "path"
+                },
+                "target": "employeeNo"
+              }
+            ]
+          },
+          "description": "Delete an employee"
+        },
+        {
+          "cacheControl": {
+            "enabled": false,
+            "maxAge": 60
+          },
+          "verb": "PUT",
+          "api": {
+            "serverclass": {
+              "value": "EMPLOYEE-SERVER",
+              "type": "constant"
+            },
+            "transactionControl": true,
+            "processName": {
+              "value": "=EMPLOYEE-PATHMON",
+              "type": "constant"
+            },
+            "stringPadding": "zeros",
+            "transactionTimeout": 10,
+            "type": "serverclass"
+          },
+          "responses": [
+            {
+              "transactionControl": "commit",
+              "mappings": [],
+              "replyCode": "0",
+              "cloakingPaths": [
+                "*"
+              ],
+              "httpStatus": 200,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeUpdateReply"
+              }
+            },
+            {
+              "httpStatus": 404,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              },
+              "replyCode": "1",
+              "transactionControl": "abort",
+              "mappings": []
+            },
+            {
+              "mappings": [
+                {
+                  "source": "*",
+                  "target": {
+                    "type": "body",
+                    "value": "*"
+                  }
+                }
+              ],
+              "replyCode": "2:100",
+              "transactionControl": "abort",
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              },
+              "httpStatus": 440
+            },
+            {
+              "mappings": [
+                {
+                  "target": {
+                    "value": "*",
+                    "type": "body"
+                  },
+                  "source": "*"
+                }
+              ],
+              "transactionControl": "abort",
+              "replyCode": "*",
+              "httpStatus": 540,
+              "messageType": {
+                "dictionary": "07f31e3e528de51d778001010000012ef1",
+                "definition": "EmployeeRequestError"
+              }
+            }
+          ],
+          "request": {
+            "mappings": [
+              {
+                "source": {
+                  "value": "3",
+                  "type": "constant"
+                },
+                "target": "requestCode"
+              },
+              {
+                "source": {
+                  "value": "*",
+                  "type": "body"
+                },
+                "target": "employee.employeeData"
+              },
+              {
+                "source": {
+                  "value": "{employee-id}",
+                  "type": "path"
+                },
+                "target": "employee.employeeNo"
+              }
+            ],
+            "messageType": {
+              "dictionary": "07f31e3e528de51d778001010000012ef1",
+              "definition": "EmployeeUpdateRequest"
+            }
+          },
+          "description": "Update an employee"
+        }
+      ],
+      "path": "/employees/{employee-id}"
+    }
+  ],
+  "modificationTime": 1465483323,
+  "name": "employee-api",
+  "id": "03f92077cc2f831d778001edcc4a42c767"
+}
