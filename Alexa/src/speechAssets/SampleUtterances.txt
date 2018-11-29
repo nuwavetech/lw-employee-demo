@@ -1,6 +1,0 @@
-GetEmployeeIntent about employees
-GetEmployeeIntent about employee {EmployeeNumber}
-GetEmployeeIntent about employee number {EmployeeNumber}
-
-SlotFollowUpIntent {EmployeeNumber}
-SlotFollowUpIntent employee number {EmployeeNumber}
