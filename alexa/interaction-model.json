@@ -1,0 +1,120 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "employee server",
+            "intents": [
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": [
+                        "Thank you",
+                        "Thanks"
+                    ]
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": [
+                        "i don't know",
+                        "what employee number",
+                        "help",
+                        "help me",
+                        "i'm confused"
+                    ]
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "GetEmployeeIntent",
+                    "slots": [
+                        {
+                            "name": "employeeNo",
+                            "type": "AMAZON.NUMBER"
+                        }
+                    ],
+                    "samples": [
+                        "tell me about employee number {employeeNo}",
+                        "get number {employeeNo}",
+                        "number {employeeNo}",
+                        "get {employeeNo}",
+                        "employee {employeeNo}",
+                        "{employeeNo}",
+                        "get employee number {employeeNo}",
+                        "about employee {employeeNo}",
+                        "read employee {employeeNo}",
+                        "tell me about employee {employeeNo}",
+                        "get employee {employeeNo}"
+                    ]
+                },
+                {
+                    "name": "GetEmployeesIntent",
+                    "slots": [
+                        {
+                            "name": "count",
+                            "type": "AMAZON.NUMBER"
+                        }
+                    ],
+                    "samples": [
+                        "i don't know any employee numbers",
+                        "i don't know one",
+                        "i don't know an employee number",
+                        "tell me the employee numbers",
+                        "list {count} employee numbers",
+                        "get {count} employee numbers",
+                        "get employee numbers",
+                        "list employee numbers",
+                        "get {count} employees",
+                        "list {count} employees",
+                        "list employees",
+                        "employees",
+                        "get employees",
+                        "tell me about employees",
+                        "for employee information",
+                        "about the employees",
+                        "about employees"
+                    ]
+                }
+            ],
+            "types": []
+        },
+        "dialog": {
+            "intents": [
+                {
+                    "name": "GetEmployeeIntent",
+                    "confirmationRequired": false,
+                    "prompts": {},
+                    "slots": [
+                        {
+                            "name": "employeeNo",
+                            "type": "AMAZON.NUMBER",
+                            "confirmationRequired": false,
+                            "elicitationRequired": true,
+                            "prompts": {
+                                "elicitation": "Elicit.Slot.1212948024988.1064071126103"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "prompts": [
+            {
+                "id": "Elicit.Slot.1212948024988.1064071126103",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "Say the employee number."
+                    }
+                ]
+            }
+        ]
+    }
+}
