@@ -3,7 +3,7 @@ Employee Server
 
 The Employee Server is a standard Pathway server written in 'C'. This project contains the server source code, test data to initialize the Enscribe employee database, and a TACL macro to start the Pathway configuration for the server.
 
-The *emppak.bin* file is a NonStop PAK file that contains the Employee Server files listed in this folder. This provides a convenient method for transferring all of the files at once to the NonStop. Transfer the *emppak.bin* file to a subvolume on your NonStop system using "binary" transfer mode.
+The [emppak.bin](./emppak.bin) file is a NonStop PAK file that contains the Employee Server files listed in this folder. This provides a convenient method for transferring all of the files at once to the NonStop. Transfer the [emppak.bin](./emppak.bin) file to a subvolume on your NonStop system using "binary" transfer mode.
 
 If you choose to transfer the files individually, use "ascii" transfer mode for all files except those with the ".bin" extension, which should be transferred in "binary" mode.
 
