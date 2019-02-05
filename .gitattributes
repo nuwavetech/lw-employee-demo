@@ -12,4 +12,5 @@
 *.jpg binary
 *.png binary
 *.pak binary
+*.bin binary
 
