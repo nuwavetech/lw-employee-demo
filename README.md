@@ -16,3 +16,5 @@ The setup steps for each component are contained in its corresponding subfolder.
 
 Documentation for LightWave Server can be found at the [NuWave Technologies Documentation Center](http://docs.nuwavetech.com)
 
+*A video presentation of the installation and setup instructions is now [available on YouTube](https://youtu.be/-gHY_1YtP4w).*
+
