@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2018 NuWave Technologies, Inc. All rights reserved.
+ *  Copyright (c) 2020 NuWave Technologies, Inc. All rights reserved.
  *
  *  This Lambda function is the endpoint for the Employee Server
  *  Alexa skill
@@ -20,10 +20,10 @@ let https = require('https');
 let helpEmployeeNumber = null;
 
 /* Update this configuration to connect to your LightWave Server instance. */
-let endpoint = 'https://lightwave-server.nuwavetech.io';
+let endpoint = 'https://lightwave-server.demo.nuwavetech.com';
 
 /* Set to true to log additional info to Cloudwatch. */
-let log = true;
+let log = (process.env.LOG === 'true' ? true : false);
 
 /*
  * This is the Lambda function's entry point. It's called by the Alexa skill
